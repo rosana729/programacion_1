@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coloquio: Introducción a la Programación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&family=Caveat:wght@600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: un cuaderno de clase bien hecho, claro y alentador; para estudiar, no para lucirse.
+   IDEA: hoja cuadriculada donde el diagrama de flujo "cobra vida" y se recorre con resaltador.
+   PICTURE: el diagrama ejecutable de cada ejemplo, grande, con el nodo activo marcado en amarillo.
+   COLOUR and TYPE: tinta azul de birome, resaltador amarillo, lapicera roja para "Falso"; Archivo + Atkinson + JetBrains Mono, Caveat para notas.
+   LAYOUT: banda azul de portada con los símbolos, índice de secciones, luego diagrama a la izquierda y código/variables/consola a la derecha. */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#121417);--grid:light-dark(#e9eef8,#1a1e24);--ink:light-dark(#14171f,#e9ecf2);--mut:light-dark(#596176,#9ba4b6);
+--blue:light-dark(#1f45d1,#8aa8ff);--band:light-dark(#1f45d1,#16226a);--hl:#ffe14d;--red:light-dark(#cc3324,#ff7d6e);
+--card:light-dark(#ffffff,#181b21);--line:light-dark(#d4dae7,#2c313a);--code:light-dark(#f3f5fb,#0c0e12);--soft:light-dark(#e4eaff,#1e2950)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip;
+background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+pre,.scroll{overflow-x:auto}.scroll a{flex:none}code{overflow-wrap:anywhere}html{scroll-padding-top:72px;scroll-behavior:smooth}
+h1,h2,h3{font-family:Archivo,system-ui,sans-serif;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5.4vw,52px);font-weight:800}
+h2{font-size:clamp(28px,3.6vw,38px);font-weight:800;margin-bottom:10px}
+h3{font-size:21px;font-weight:600;line-height:1.2}
+p{margin:.5em 0}
+.lead{max-width:66ch;color:var(--mut)}
+.note{font-family:Caveat,cursive;font-size:23px;color:var(--blue);line-height:1.1}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.88em}
+:focus-visible{outline:3px solid var(--hl);outline-offset:2px;box-shadow:0 0 0 5px var(--ink)}
+button,.btn{font:600 16px/1 Archivo,system-ui,sans-serif;min-height:44px;padding:0 16px;border-radius:10px;border:2px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer}
+button:hover{background:var(--soft)}
+button.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+button.pri:hover{filter:brightness(1.1)}
+button:disabled{opacity:.45;cursor:default}
+input[type=number],input[type=text]{font:16px "JetBrains Mono",monospace;min-height:44px;padding:0 10px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:100%}
+input:focus{border-color:var(--blue)}
+/* portada */
+.hero{background:var(--band);color:#fff;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:24px 24px}
+.hero .lead{color:#dfe6ff}
+.hero .kick{font-family:Caveat,cursive;font-size:26px;color:var(--hl)}
+.hgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
+.syms{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:8px}
+.sym{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.35);border-radius:14px;padding:14px;animation:glow 7.5s infinite}
+.sym svg{width:100%;height:70px;display:block}
+.sym svg *{fill:none;stroke:#fff;stroke-width:2.4}
+.sym b{display:block;font-family:Archivo;font-size:17px;margin-top:6px}
+.sym span{font-size:14px;color:#dfe6ff}
+.sym:nth-child(2){animation-delay:1.5s}.sym:nth-child(3){animation-delay:3s}.sym:nth-child(4){animation-delay:4.5s}.sym:nth-child(5){animation-delay:6s}
+@keyframes glow{0%,18%{background:rgba(255,225,77,.95);color:#14171f;border-color:var(--hl)}22%,100%{background:rgba(255,255,255,.07)}}
+@keyframes glowsvg{0%,18%{stroke:#14171f}22%,100%{stroke:#fff}}
+.sym svg *{animation:glowsvg 7.5s infinite;animation-delay:inherit}
+.sym:nth-child(2) svg *{animation-delay:1.5s}.sym:nth-child(3) svg *{animation-delay:3s}.sym:nth-child(4) svg *{animation-delay:4.5s}.sym:nth-child(5) svg *{animation-delay:6s}
+.hero .go{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.hero .go a{color:#14171f;background:var(--hl);border-radius:10px;padding:12px 16px;font:600 16px Archivo;text-decoration:none}
+.hero .go a.alt{background:transparent;color:#fff;border:2px solid #fff}
+/* nav */
+nav{background:var(--bg);border-bottom:2px solid var(--line);z-index:5}
+nav .scroll{display:flex;gap:4px;padding:8px max(5vw,16px);max-width:1240px;margin:0 auto}
+nav a{color:var(--ink);text-decoration:none;padding:10px 12px;border-radius:8px;font:600 15px Archivo;white-space:nowrap}
+nav a:hover{background:var(--soft)}
+@media(min-width:900px){nav{position:sticky;top:0}}
+section.band{border-bottom:2px dashed var(--line)}
+/* temas */
+.acc{display:grid;gap:10px;margin-top:18px}
+details.t{background:var(--card);border:2px solid var(--line);border-radius:14px}
+details.t>summary{cursor:pointer;padding:16px 18px;font:600 19px Archivo;list-style:none;display:flex;gap:12px;align-items:center;min-height:44px}
+details.t>summary::before{content:"+";font:800 22px Archivo;color:var(--blue);width:18px}
+details.t[open]>summary::before{content:"–"}
+details.t>div{padding:0 18px 18px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.box{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.steps li{counter-increment:s;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font:700 14px Archivo;margin-right:8px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 15px Archivo}
+.play{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:360px}
+.play label{font-size:15px;color:var(--mut)}
+.ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:12px}
+.ops div{border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;background:var(--bg);font-family:"JetBrains Mono",monospace;font-size:15px}
+.ops b{white-space:nowrap}.ops .V{color:var(--blue)}.ops .F{color:var(--red)}
+/* tabs ejemplos */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.an{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.an div{border-radius:12px;padding:10px 12px;background:var(--card);border:2px solid var(--line)}
+.an small{display:block;font:600 13px Archivo;color:var(--mut)}
+.an code{font-size:15px}
+.tag{display:inline-block;font:600 13px Archivo;padding:4px 10px;border-radius:99px;background:var(--soft);color:var(--blue);margin-left:6px;vertical-align:middle}
+/* tracer */
+.tracer{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-top:12px}
+@media(max-width:900px){.tracer{grid-template-columns:minmax(0,1fr)}}
+.chart{align-self:start;border-radius:12px;background:var(--bg);border:1.5px solid var(--line);padding:6px}
+.chart svg{display:block;width:100%;height:auto;margin:0 auto}
+.fc text{font-family:"JetBrains Mono",monospace;font-size:12.5px;fill:var(--ink)}
+.fc .sh{fill:var(--card);stroke:var(--ink);stroke-width:1.8;transition:fill .25s}
+.fc .n.done .sh{fill:var(--soft)}
+.fc .n.on .sh{fill:var(--hl);stroke:#14171f;stroke-width:2.6}
+.fc .n.on text{fill:#14171f;font-weight:600}
+.fc .e{fill:none;stroke:var(--mut);stroke-width:1.6}
+.fc .e.done{stroke:var(--blue);stroke-width:3}
+.fc .mk{fill:var(--mut)}.fc .mkd{fill:var(--blue)}
+.fc .lb{font-family:Caveat,cursive;font-size:20px;font-weight:600}
+.fc .lb.V{fill:var(--blue)}.fc .lb.F{fill:var(--red)}
+.side{display:grid;gap:12px;align-content:start}
+.ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.ins label{display:grid;gap:4px;font-size:14px;color:var(--mut)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips button{min-height:36px;padding:0 12px;font-size:14px;border-width:1.5px;border-radius:99px}
+.why{border-left:5px solid var(--hl);background:var(--bg);padding:10px 12px;border-radius:0 10px 10px 0;min-height:48px;font-size:16px}
+.why.err{border-color:var(--red);color:var(--red)}
+.code{margin:0;background:var(--code);border-radius:12px;padding:10px 0;font:14px/1.6 "JetBrains Mono",monospace;position:relative}
+.code .ln{display:block;padding:0 12px 0 0;white-space:pre}
+.code .ln i{display:inline-block;width:34px;text-align:right;margin-right:12px;color:var(--mut);font-style:normal;user-select:none}
+.code .ln.on{background:var(--hl);color:#14171f}.code .ln.on i,.code .ln.on span{color:#14171f}
+.code .k{color:var(--blue);font-weight:600}.code .s{color:var(--red)}
+.side .code{padding-top:44px}.cp{position:absolute;top:6px;right:6px;min-height:32px;font-size:13px;padding:0 10px;border-width:1.5px}
+.vt td,.vt th{font-size:14px;padding:6px 8px}.vt td:last-child{font-family:"JetBrains Mono",monospace;text-align:right;white-space:nowrap}
+.vt tr.ch td{background:var(--hl);color:#14171f}
+.con{background:#0c0e12;color:#e9ecf2;border-radius:12px;padding:10px 12px;font:14px/1.6 "JetBrains Mono",monospace;min-height:90px;max-height:220px;overflow:auto}
+.con .in{color:#ffe14d}.con .in::before{content:"> "}.con .sys{color:#8aa8ff;font-style:italic}.con .out{color:#fff}
+.con .ph{color:#7d8597}
+.lbl{font:600 13px Archivo;color:var(--mut);margin-bottom:4px}
+.pred{border:2px dashed var(--blue);border-radius:12px;padding:10px 12px}
+.pred button.sel{background:var(--hl);color:#14171f;border-color:#14171f}
+.res{font-weight:700}
+/* ejercicios */
+.ex{display:grid;gap:12px;margin-top:16px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h3 .num{color:var(--blue);margin-right:6px}
+.card details{margin-top:6px}.card summary{cursor:pointer;color:var(--blue);font-weight:700;min-height:32px}
+.sol[hidden]{display:none}
+.pslist{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:16px}
+/* flashcards */
+.fbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.meter{flex:1 1 220px;height:14px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s}
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.q{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:10px;align-content:start}
+.q.ok{border-color:var(--blue)}.q.rep{border-color:var(--red)}
+.q.pick{box-shadow:0 0 0 4px var(--hl)}
+.q h3{font-size:18px}
+.q .a{border-top:1.5px dashed var(--line);padding-top:10px;font-size:16px}
+.q .a[hidden]{display:none}
+.q .row button{min-height:40px;font-size:14px}
+.chk{display:grid;gap:8px;margin-top:14px;max-width:760px}
+.chk label{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 14px;min-height:48px;cursor:pointer}
+.chk input{width:22px;height:22px;accent-color:var(--blue);flex:none}
+.chk input:checked+span{text-decoration:line-through;color:var(--mut)}
+.goal{margin-top:20px;background:var(--hl);color:#14171f;border-radius:14px;padding:16px 18px;max-width:760px;font-size:18px}
+footer{padding:24px max(5vw,16px);color:var(--mut);font-size:14px;text-align:center}
+@media(max-width:600px){table{font-size:13px};body{font-size:16px}.tracer{padding:10px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="hero band">
+ <div class="wrap hgrid">
+  <div>
+   <div class="kick">1.º año · guía de estudio y práctica</div>
+   <h1>Coloquio de Introducción a la Programación</h1>
+   <p class="lead">Todo lo que tenés que saber explicar, resolver en papel y programar en PSeInt. Los ejemplos se pueden <b>ejecutar paso a paso</b>: vas a ver qué camino sigue el diagrama de flujo, qué línea del código se ejecuta y cómo cambian las variables.</p>
+   <div class="go"><a href="#ejemplos">Ver ejemplos resueltos</a><a class="alt" href="#preguntas">Repasar preguntas</a></div>
+  </div>
+  <div>
+   <p class="note" style="color:#ffe14d;margin:0 0 4px">Los 5 símbolos del diagrama de flujo, en el orden en que se recorren:</p>
+   <div class="syms">
+    <div class="sym"><svg viewBox="0 0 160 70"><rect x="25" y="15" width="110" height="40" rx="20"/></svg><b>Inicio / Fin</b><span>Dónde empieza y termina</span></div>
+    <div class="sym"><svg viewBox="0 0 160 70"><polygon points="38,15 145,15 122,55 15,55"/></svg><b>Entrada / Salida</b><span>Leer y Escribir</span></div>
+    <div class="sym"><svg viewBox="0 0 160 70"><rect x="15" y="15" width="130" height="40" rx="2"/></svg><b>Proceso</b><span>Cálculos y asignaciones</span></div>
+    <div class="sym"><svg viewBox="0 0 160 70"><polygon points="80,5 150,35 80,65 10,35"/></svg><b>Decisión</b><span>Condición: V o F</span></div>
+    <div class="sym"><svg viewBox="0 0 160 70"><path d="M15 35 H135"/><path d="M125 25 L140 35 L125 45"/></svg><b>Flecha de flujo</b><span>Indica el orden</span></div>
+   </div>
+  </div>
+ </div>
+</header>
+
+<nav aria-label="Secciones"><div class="scroll">
+ <a href="#temas">1. Temas</a><a href="#ejemplos">2. Ejemplos resueltos</a><a href="#papel">3. En papel</a><a href="#pseint">4. En PSeInt</a><a href="#diagramas">5. Diagramas</a><a href="#preguntas">6. Preguntas</a><a href="#repaso">7. Cómo prepararte</a>
+</div></nav>
+
+<main>
+<section class="band" id="temas"><div class="wrap">
+ <h2>1. Temas de estudio</h2>
+ <p class="lead">Se espera que puedas explicar cada concepto con tus propias palabras. Abrí cada tema, leelo y tratá de explicarlo en voz alta sin mirar.</p>
+ <div class="acc">
+  <details class="t" open><summary>Introducción a la programación</summary><div>
+   <div class="cols">
+    <div class="box"><b>Programar</b><p>Es escribir instrucciones para que una computadora resuelva un problema.</p></div>
+    <div class="box"><b>Algoritmo</b><p>Es una secuencia ordenada y finita de pasos claros que resuelve un problema. Es la <i>idea</i> de la solución.</p></div>
+    <div class="box"><b>Programa</b><p>Es ese algoritmo escrito en un lenguaje que la computadora puede ejecutar, por ejemplo PSeInt.</p></div>
+   </div>
+   <h3 style="margin-top:18px">Etapas para resolver un problema</h3>
+   <ol class="steps"><li>Analizar el problema</li><li>Identificar los datos</li><li>Diseñar la solución</li><li>Representarla (diagrama o pseudocódigo)</li><li>Ejecutarla</li><li>Probarla</li></ol>
+   <h3 style="margin-top:14px">Características de un algoritmo</h3>
+   <div class="cols" style="margin-top:8px">
+    <div class="box"><b>Orden:</b> los pasos van en una secuencia precisa.</div>
+    <div class="box"><b>Claridad:</b> cada paso se entiende de una sola manera.</div>
+    <div class="box"><b>Finitud:</b> siempre termina después de una cantidad de pasos.</div>
+   </div>
+  </div></details>
+
+  <details class="t"><summary>Algoritmos, datos y variables</summary><div>
+   <div class="cols">
+    <div class="box"><b>Entrada</b><p>Los datos que recibe el algoritmo. En PSeInt: <code>Leer</code>.</p></div>
+    <div class="box"><b>Procesamiento</b><p>Los cálculos y decisiones que se hacen con esos datos.</p></div>
+    <div class="box"><b>Salida</b><p>Los resultados que se muestran. En PSeInt: <code>Escribir</code>.</p></div>
+   </div>
+   <p style="margin-top:14px"><b>Variable:</b> es un espacio de memoria con nombre que guarda un dato que <i>puede cambiar</i>. Podés pensarla como una caja con etiqueta: la etiqueta es el nombre (<code>suma</code>) y adentro está el valor (<code>8</code>).</p>
+   <p><b>Constante:</b> es un valor que no cambia durante el programa (por ejemplo, el 10% de descuento o la nota mínima 6).</p>
+   <div class="scroll"><table class="stack" style="margin-top:10px">
+    <thead><tr><th>Tipo</th><th>Qué guarda</th><th>Ejemplos</th><th>En PSeInt</th></tr></thead>
+    <tbody>
+     <tr><td>Entero</td><td>Números sin decimales</td><td><code>5</code>, <code>-3</code>, <code>0</code></td><td><code>Entero</code></td></tr>
+     <tr><td>Real</td><td>Números con decimales</td><td><code>7.5</code>, <code>-0.25</code></td><td><code>Real</code></td></tr>
+     <tr><td>Texto</td><td>Letras, palabras, símbolos</td><td><code>"Hola"</code>, <code>"Ana"</code></td><td><code>Caracter</code> / <code>Texto</code></td></tr>
+     <tr><td>Lógico</td><td>Solo Verdadero o Falso</td><td><code>Verdadero</code>, <code>Falso</code></td><td><code>Logico</code></td></tr>
+    </tbody></table></div>
+   <p style="margin-top:12px"><b>Asignación:</b> <code>suma &lt;- num1 + num2</code> se lee “a <i>suma</i> se le asigna <i>num1 + num2</i>”. Primero se calcula la <b>expresión</b> de la derecha y después se guarda el resultado en la variable de la izquierda.</p>
+  </div></details>
+
+  <details class="t"><summary>Operadores (con calculadora para probar)</summary><div>
+   <div class="cols">
+    <div class="box"><b>Aritméticos</b> calculan y devuelven un número: <code>+ - * /</code> y <code>MOD</code> (resto de la división).</div>
+    <div class="box"><b>Relacionales</b> comparan y devuelven Verdadero o Falso: <code>&gt; &lt; = &lt;&gt; &gt;= &lt;=</code>.</div>
+    <div class="box"><b>Lógicos</b> combinan condiciones: <code>AND</code> (las dos V), <code>OR</code> (alguna V), <code>NOT</code> (invierte).</div>
+   </div>
+   <p class="note" style="margin-top:14px">Cambiá los números y mirá qué devuelve cada operador:</p>
+   <div class="play"><label>a<input type="number" id="pa" value="17"></label><label>b<input type="number" id="pb" value="5"></label></div>
+   <div class="ops" id="ops"></div>
+   <p style="margin-top:10px"><b>Truco de MOD:</b> si <code>n MOD 2 = 0</code>, el número es par (el resto de dividir por 2 es cero). Ejemplo: 17 dividido 5 da 3 y sobran 2, así que <code>17 MOD 5 = 2</code>.</p>
+  </div></details>
+
+  <details class="t"><summary>Estructuras de programación</summary><div>
+   <div class="cols">
+    <div class="box"><b>Secuencial</b><p>Las instrucciones se ejecutan una después de otra, en orden, todas una vez.</p><pre class="code"><span class="ln"><span class="k">Leer</span> a, b</span><span class="ln">suma &lt;- a + b</span><span class="ln"><span class="k">Escribir</span> suma</span></pre></div>
+    <div class="box"><b>Condicional simple</b><p>Hace algo solo si la condición es verdadera.</p><pre class="code"><span class="ln"><span class="k">Si</span> precio &gt; 10000 <span class="k">Entonces</span></span><span class="ln">    precio &lt;- precio * 0.9</span><span class="ln"><span class="k">FinSi</span></span></pre></div>
+    <div class="box"><b>Condicional doble</b><p>Tiene dos caminos: uno si es V y otro si es F.</p><pre class="code"><span class="ln"><span class="k">Si</span> nota &gt;= 6 <span class="k">Entonces</span></span><span class="ln">    <span class="k">Escribir</span> <span class="s">"Aprobado"</span></span><span class="ln"><span class="k">Sino</span></span><span class="ln">    <span class="k">Escribir</span> <span class="s">"Desaprobado"</span></span><span class="ln"><span class="k">FinSi</span></span></pre></div>
+   </div>
+   <p style="margin-top:10px">Para entender una condición, preguntate: <i>¿con qué valores da Verdadero y con cuáles Falso?</i> Y después probá un valor de cada lado y el valor justo del límite.</p>
+  </div></details>
+
+  <details class="t"><summary>Diagramas de flujo</summary><div>
+   <p>Un diagrama de flujo es un dibujo del algoritmo: cada símbolo es un tipo de paso y las flechas marcan el orden. Sirve para pensar la lógica antes de programar y para explicarla.</p>
+   <div class="scroll"><table class="stack"><thead><tr><th>Símbolo</th><th>Forma</th><th>Para qué se usa</th></tr></thead><tbody>
+    <tr><td>Inicio / Fin</td><td>Óvalo</td><td>Marca dónde empieza y dónde termina</td></tr>
+    <tr><td>Entrada / Salida</td><td>Paralelogramo</td><td>Leer datos o Escribir resultados</td></tr>
+    <tr><td>Proceso</td><td>Rectángulo</td><td>Cálculos y asignaciones</td></tr>
+    <tr><td>Decisión</td><td>Rombo</td><td>Una condición con dos salidas: V y F</td></tr>
+    <tr><td>Flecha</td><td>Línea con punta</td><td>Indica el orden en que se recorre</td></tr>
+   </tbody></table></div>
+   <p style="margin-top:10px"><b>Seguir el recorrido</b> (prueba de escritorio): elegí un valor de entrada, recorré el diagrama con el dedo y anotá en una tabla cómo cambia cada variable. En los ejemplos de abajo, el botón <b>Paso</b> hace exactamente eso.</p>
+  </div></details>
+
+  <details class="t"><summary>PSeInt</summary><div>
+   <p>PSeInt es un programa para escribir y ejecutar algoritmos en <b>pseudocódigo en español</b>. Te deja probarlos con distintos datos y también genera el diagrama de flujo.</p>
+   <div class="scroll"><table class="stack"><thead><tr><th>Instrucción</th><th>Qué hace</th><th>Ejemplo</th></tr></thead><tbody>
+    <tr><td><code>Algoritmo … FinAlgoritmo</code></td><td>Abre y cierra el programa</td><td><code>Algoritmo Suma</code></td></tr>
+    <tr><td><code>Definir … Como</code></td><td>Declara variables y su tipo</td><td><code>Definir n Como Entero</code></td></tr>
+    <tr><td><code>Leer</code></td><td>Pide un dato y lo guarda en una variable</td><td><code>Leer nota</code></td></tr>
+    <tr><td><code>Escribir</code></td><td>Muestra texto o valores</td><td><code>Escribir "Total: ", t</code></td></tr>
+    <tr><td><code>&lt;-</code></td><td>Asigna un valor</td><td><code>t &lt;- a * b</code></td></tr>
+    <tr><td><code>Si … Entonces … Sino … FinSi</code></td><td>Condicional</td><td><code>Si n &gt; 0 Entonces</code></td></tr>
+   </tbody></table></div>
+  </div></details>
+ </div>
+</div></section>
+
+<section class="band" id="ejemplos"><div class="wrap">
+ <h2>2. Ejemplos resueltos</h2>
+ <p class="lead">Elegí un ejemplo, cargá los datos y tocá <b>Paso</b> para avanzar de a una instrucción, o <b>Ejecutar todo</b> para verlo correr. El nodo en amarillo es el que se está ejecutando y su línea de código se marca igual.</p>
+ <div class="tabs" role="tablist" id="extabs"></div>
+ <div id="expanel"></div>
+</div></section>
+
+<section class="band" id="papel"><div class="wrap">
+ <h2>3. Ejercicios para resolver en papel</h2>
+ <p class="lead">Primero intentalo solo: identificá entradas, procesos y salidas, y dibujá el diagrama. Después abrí la solución y comparala; podés ejecutarla con tus propios valores.</p>
+ <div class="ex" id="paper"></div>
+</div></section>
+
+<section class="band" id="pseint"><div class="wrap">
+ <h2>4. Ejercicios para programar en PSeInt</h2>
+ <p class="lead">Escribilos en PSeInt y probalos con varios datos. Varios ya están resueltos más arriba: el botón te lleva a la solución.</p>
+ <div class="pslist" id="pslist"></div>
+ <div id="calcsol" class="sol" hidden></div>
+</div></section>
+
+<section class="band" id="diagramas"><div class="wrap">
+ <h2>5. Interpretación de diagramas de flujo</h2>
+ <p class="lead">En el coloquio te pueden dar un diagrama y pedirte que digas qué hace y qué camino toma. Practicá así: elegí un valor, <b>predecí</b> si la condición da Verdadero o Falso, y después ejecutalo para comprobarlo.</p>
+ <div class="cols" style="margin-top:12px">
+  <div class="box"><b>Al leer un diagrama, señalá:</b> inicio, entrada, proceso, decisión, salida y fin.</div>
+  <div class="box"><b>Explicá con tus palabras</b> qué hace el algoritmo completo, no cada símbolo por separado.</div>
+  <div class="box"><b>Para cada valor,</b> decí qué camino toma (V o F) y qué resultado se obtiene.</div>
+ </div>
+ <h3 style="margin-top:24px">Desafío A · Comparar un número con 10 <span class="tag">probá 5, 10 y 15</span></h3>
+ <div id="ch1"></div>
+ <h3 style="margin-top:28px">Desafío B · ¿Par o impar? <span class="tag">probá 8, 13 y 20</span></h3>
+ <div id="ch2"></div>
+</div></section>
+
+<section class="band" id="preguntas"><div class="wrap">
+ <h2>6. Preguntas posibles para el coloquio</h2>
+ <p class="lead">Respondé en voz alta, después mirá la respuesta modelo y marcá si la sabías. Tu progreso queda guardado en este navegador.</p>
+ <div class="fbar">
+  <button class="pri" id="rnd">Pregunta al azar</button>
+  <button id="fAll" aria-pressed="true">Todas</button>
+  <button id="fRep" aria-pressed="false">Solo para repasar</button>
+  <div class="meter" aria-hidden="true"><i id="mbar"></i></div>
+  <span id="mtxt" class="mono"></span>
+ </div>
+ <div class="fc-grid" id="cards"></div>
+</div></section>
+
+<section class="band" id="repaso"><div class="wrap">
+ <h2>7. Cómo preparar el coloquio</h2>
+ <p class="lead">Tildá cada punto cuando lo hayas hecho.</p>
+ <div class="chk" id="chk"></div>
+ <div class="goal"><b>Objetivo del coloquio:</b> demostrar que comprendés los conceptos básicos de programación, que podés resolver problemas sencillos y que sabés explicar la lógica de tus soluciones.</div>
+</div></section>
+</main>
+<footer>Guía de estudio · Introducción a la Programación · 1.º año</footer>
+
+<script>
+{
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=x=>typeof x==='number'?(Number.isInteger(x)?String(x):String(+x.toFixed(4))):String(x);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const N=(id,t,x,y,s,L,o={})=>({id,t,x,y,s,L,...o});
+const KW=/\b(Algoritmo|FinAlgoritmo|Definir|Como|Real|Entero|Escribir|Leer|Si|Entonces|Sino|FinSi|MOD)\b/g;
+const hl=line=>line.split(/("[^"]*")/).map((p,i)=>i%2?'<span class="s">'+esc(p)+'</span>':esc(p).replace(KW,'<span class="k">$1</span>')).join('');
+const ask=(io,p,n)=>io.ask(p,n), say=(io,t)=>io.say(t);
+
+/* ---------- programas ---------- */
+const P={
+suma:{vars:[['num1','Real'],['num2','Real'],['suma','Real']],inputs:[['num1','Primer número',5],['num2','Segundo número',3]],presets:[[5,3],[2.5,-1],[100,250]],
+ code:['Algoritmo SumaDosNumeros','    Definir num1, num2, suma Como Real','    Escribir "Ingrese el primer numero:"','    Leer num1','    Escribir "Ingrese el segundo numero:"','    Leer num2','    suma <- num1 + num2','    Escribir "La suma es: ", suma','FinAlgoritmo'],
+ an:['num1, num2','suma ← num1 + num2','suma','5 y 3 → 8'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer num1, num2',[2,3,4,5],{next:'c',do:(v,io)=>{ask(io,'Ingrese el primer numero:','num1');ask(io,'Ingrese el segundo numero:','num2')}}),
+ N('c','proc',0,2,'suma ← num1 + num2',[6],{next:'d',do:v=>{v.suma=v.num1+v.num2}}),N('d','io',0,3,'Escribir suma',[7],{next:'e',do:(v,io)=>say(io,'La suma es: '+fmt(v.suma))}),N('e','end',0,4,'Fin',[8])]},
+prom2:{vars:[['nota1','Real'],['nota2','Real'],['promedio','Real']],inputs:[['nota1','Primera nota',8],['nota2','Segunda nota',6]],presets:[[8,6],[7,8],[10,5]],
+ code:['Algoritmo Promedio','    Definir nota1, nota2, promedio Como Real','    Escribir "Ingrese la primera nota:"','    Leer nota1','    Escribir "Ingrese la segunda nota:"','    Leer nota2','    promedio <- (nota1 + nota2) / 2','    Escribir "El promedio es: ", promedio','FinAlgoritmo'],
+ an:['nota1, nota2','promedio ← (nota1 + nota2) / 2','promedio','8 y 6 → 7'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer nota1, nota2',[2,3,4,5],{next:'c',do:(v,io)=>{ask(io,'Ingrese la primera nota:','nota1');ask(io,'Ingrese la segunda nota:','nota2')}}),
+ N('c','proc',0,2,'promedio ← (nota1+nota2)/2',[6],{next:'d',do:v=>{v.promedio=(v.nota1+v.nota2)/2},w:'Los paréntesis son clave: primero se suman las notas y después se divide por 2. Sin paréntesis se dividiría solo nota2.'}),
+ N('d','io',0,3,'Escribir promedio',[7],{next:'e',do:(v,io)=>say(io,'El promedio es: '+fmt(v.promedio))}),N('e','end',0,4,'Fin',[8])]},
+parimpar:{vars:[['numero','Entero']],inputs:[['numero','Número entero',7]],presets:[[8],[13],[20],[0]],
+ code:['Algoritmo ParImpar','    Definir numero Como Entero','    Escribir "Ingrese un numero:"','    Leer numero','    Si numero MOD 2 = 0 Entonces','        Escribir "El numero es par"','    Sino','        Escribir "El numero es impar"','    FinSi','FinAlgoritmo'],
+ an:['numero (Entero)','numero MOD 2 = 0 ?','"par" o "impar"','8 → par · 13 → impar'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer numero',[2,3],{next:'c',do:(v,io)=>ask(io,'Ingrese un numero:','numero')}),
+ N('c','dec',0,2,'numero MOD 2 = 0',[4],{yes:'d',no:'e',test:v=>v.numero%2===0,ex:v=>`${fmt(v.numero)} MOD 2 = ${fmt(v.numero%2)}, y ${fmt(v.numero%2)} = 0 es`}),
+ N('d','io',1,3,'Escribir "Es par"',[5],{next:'f',do:(v,io)=>say(io,'El numero es par')}),N('e','io',-1,3,'Escribir "Es impar"',[6,7],{next:'f',do:(v,io)=>say(io,'El numero es impar')}),N('f','end',0,4,'Fin',[8,9])]},
+aprob:{vars:[['nota','Real']],inputs:[['nota','Nota',6.5]],presets:[[8],[6],[5.99],[3]],
+ code:['Algoritmo EstadoNota','    Definir nota Como Real','    Escribir "Ingrese la nota:"','    Leer nota','    Si nota >= 6 Entonces','        Escribir "Aprobado"','    Sino','        Escribir "Desaprobado"','    FinSi','FinAlgoritmo'],
+ an:['nota','nota >= 6 ?','"Aprobado" o "Desaprobado"','6 → Aprobado (límite)'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer nota',[2,3],{next:'c',do:(v,io)=>ask(io,'Ingrese la nota:','nota')}),
+ N('c','dec',0,2,'nota >= 6',[4],{yes:'d',no:'e',test:v=>v.nota>=6,ex:v=>`${fmt(v.nota)} >= 6 es`}),
+ N('d','io',1,3,'Escribir "Aprobado"',[5],{next:'f',do:(v,io)=>say(io,'Aprobado')}),N('e','io',-1,3,'Escribir "Desaprobado"',[6,7],{next:'f',do:(v,io)=>say(io,'Desaprobado')}),N('f','end',0,4,'Fin',[8,9])]},
+sumaresta:{vars:[['a','Real'],['b','Real'],['suma','Real'],['resta','Real']],inputs:[['a','a',9],['b','b',4]],presets:[[9,4],[3,10]],
+ code:['Algoritmo SumaYResta','    Definir a, b, suma, resta Como Real','    Escribir "Ingrese dos numeros:"','    Leer a, b','    suma <- a + b','    resta <- a - b','    Escribir "Suma: ", suma','    Escribir "Resta: ", resta','FinAlgoritmo'],
+ an:['a, b','suma ← a + b · resta ← a − b','suma, resta','9 y 4 → 13 y 5'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer a, b',[2,3],{next:'c',do:(v,io)=>{ask(io,'Ingrese dos numeros:','a');ask(io,null,'b')}}),
+ N('c','proc',0,2,'suma ← a + b',[4],{next:'d',do:v=>{v.suma=v.a+v.b}}),N('d','proc',0,3,'resta ← a - b',[5],{next:'e',do:v=>{v.resta=v.a-v.b}}),
+ N('e','io',0,4,'Escribir suma, resta',[6,7],{next:'f',do:(v,io)=>{say(io,'Suma: '+fmt(v.suma));say(io,'Resta: '+fmt(v.resta))}}),N('f','end',0,5,'Fin',[8])]},
+area:{vars:[['base','Real'],['altura','Real'],['area','Real']],inputs:[['base','Base',5],['altura','Altura',3]],presets:[[5,3],[2.5,4]],
+ code:['Algoritmo AreaRectangulo','    Definir base, altura, area Como Real','    Escribir "Ingrese la base:"','    Leer base','    Escribir "Ingrese la altura:"','    Leer altura','    area <- base * altura','    Escribir "El area es: ", area','FinAlgoritmo'],
+ an:['base, altura','area ← base * altura','area','5 y 3 → 15'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer base, altura',[2,3,4,5],{next:'c',do:(v,io)=>{ask(io,'Ingrese la base:','base');ask(io,'Ingrese la altura:','altura')}}),
+ N('c','proc',0,2,'area ← base * altura',[6],{next:'d',do:v=>{v.area=v.base*v.altura}}),N('d','io',0,3,'Escribir area',[7],{next:'e',do:(v,io)=>say(io,'El area es: '+fmt(v.area))}),N('e','end',0,4,'Fin',[8])]},
+prom3:{vars:[['n1','Real'],['n2','Real'],['n3','Real'],['promedio','Real']],inputs:[['n1','Nota 1',7],['n2','Nota 2',8],['n3','Nota 3',6]],presets:[[7,8,6],[10,9,5]],
+ code:['Algoritmo PromedioTres','    Definir n1, n2, n3, promedio Como Real','    Escribir "Ingrese las tres notas:"','    Leer n1, n2, n3','    promedio <- (n1 + n2 + n3) / 3','    Escribir "El promedio es: ", promedio','FinAlgoritmo'],
+ an:['n1, n2, n3','promedio ← (n1+n2+n3) / 3','promedio','7, 8 y 6 → 7'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer n1, n2, n3',[2,3],{next:'c',do:(v,io)=>{ask(io,'Ingrese las tres notas:','n1');ask(io,null,'n2');ask(io,null,'n3')}}),
+ N('c','proc',0,2,'promedio ← (n1+n2+n3)/3',[4],{next:'d',do:v=>{v.promedio=(v.n1+v.n2+v.n3)/3},w:'Se suman las tres notas entre paréntesis y el total se divide por 3: (7 + 8 + 6) / 3 = 21 / 3 = 7.'}),
+ N('d','io',0,3,'Escribir promedio',[5],{next:'e',do:(v,io)=>say(io,'El promedio es: '+fmt(v.promedio))}),N('e','end',0,4,'Fin',[6])]},
+signo:{vars:[['numero','Real']],inputs:[['numero','Número',-4]],presets:[[5],[-3],[0]],
+ code:['Algoritmo PositivoNegativoCero','    Definir numero Como Real','    Escribir "Ingrese un numero:"','    Leer numero','    Si numero > 0 Entonces','        Escribir "Positivo"','    Sino','        Si numero < 0 Entonces','            Escribir "Negativo"','        Sino','            Escribir "Cero"','        FinSi','    FinSi','FinAlgoritmo'],
+ an:['numero','numero > 0 ? · numero < 0 ?','"Positivo", "Negativo" o "Cero"','5 · −3 · 0'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer numero',[2,3],{next:'c',do:(v,io)=>ask(io,'Ingrese un numero:','numero')}),
+ N('c','dec',0,2,'numero > 0',[4],{yes:'d',no:'e',test:v=>v.numero>0,ex:v=>`${fmt(v.numero)} > 0 es`}),N('d','io',1,3,'Escribir "Positivo"',[5],{next:'h',do:(v,io)=>say(io,'Positivo')}),
+ N('e','dec',-1,3,'numero < 0',[6,7],{yes:'f',no:'g',test:v=>v.numero<0,ex:v=>`${fmt(v.numero)} < 0 es`}),N('f','io',0,4,'Escribir "Negativo"',[8],{next:'h',do:(v,io)=>say(io,'Negativo')}),
+ N('g','io',-1,4,'Escribir "Cero"',[9,10],{next:'h',do:(v,io)=>say(io,'Cero')}),N('h','end',0,5,'Fin',[11,12,13])]},
+mayor:{vars:[['a','Real'],['b','Real']],inputs:[['a','a',8],['b','b',3]],presets:[[8,3],[2,9],[4,4]],
+ code:['Algoritmo MayorDeDos','    Definir a, b Como Real','    Escribir "Ingrese dos numeros:"','    Leer a, b','    Si a > b Entonces','        Escribir "El mayor es: ", a','    Sino','        Si a < b Entonces','            Escribir "El mayor es: ", b','        Sino','            Escribir "Son iguales"','        FinSi','    FinSi','FinAlgoritmo'],
+ an:['a, b','a > b ? · a < b ?','el mayor o "Son iguales"','8 y 3 · 2 y 9 · 4 y 4'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer a, b',[2,3],{next:'c',do:(v,io)=>{ask(io,'Ingrese dos numeros:','a');ask(io,null,'b')}}),
+ N('c','dec',0,2,'a > b',[4],{yes:'d',no:'e',test:v=>v.a>v.b,ex:v=>`${fmt(v.a)} > ${fmt(v.b)} es`}),N('d','io',1,3,'Escribir "Mayor: ", a',[5],{next:'h',do:(v,io)=>say(io,'El mayor es: '+fmt(v.a))}),
+ N('e','dec',-1,3,'a < b',[6,7],{yes:'f',no:'g',test:v=>v.a<v.b,ex:v=>`${fmt(v.a)} < ${fmt(v.b)} es`}),N('f','io',0,4,'Escribir "Mayor: ", b',[8],{next:'h',do:(v,io)=>say(io,'El mayor es: '+fmt(v.b))}),
+ N('g','io',-1,4,'Escribir "Son iguales"',[9,10],{next:'h',do:(v,io)=>say(io,'Son iguales')}),N('h','end',0,5,'Fin',[11,12,13])]},
+edad:{vars:[['edad','Entero']],inputs:[['edad','Edad',16]],presets:[[16],[18],[25]],
+ code:['Algoritmo MayorDeEdad','    Definir edad Como Entero','    Escribir "Ingrese su edad:"','    Leer edad','    Si edad >= 18 Entonces','        Escribir "Mayor de edad"','    Sino','        Escribir "Menor de edad"','    FinSi','FinAlgoritmo'],
+ an:['edad (Entero)','edad >= 18 ?','"Mayor de edad" o "Menor de edad"','18 → Mayor (límite)'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer edad',[2,3],{next:'c',do:(v,io)=>ask(io,'Ingrese su edad:','edad')}),
+ N('c','dec',0,2,'edad >= 18',[4],{yes:'d',no:'e',test:v=>v.edad>=18,ex:v=>`${fmt(v.edad)} >= 18 es`}),
+ N('d','io',1,3,'Escribir "Mayor de edad"',[5],{next:'f',do:(v,io)=>say(io,'Mayor de edad')}),N('e','io',-1,3,'Escribir "Menor de edad"',[6,7],{next:'f',do:(v,io)=>say(io,'Menor de edad')}),N('f','end',0,4,'Fin',[8,9])]},
+desc:{vars:[['precio','Real']],inputs:[['precio','Precio ($)',15000]],presets:[[8000],[10000],[15000]],
+ code:['Algoritmo PrecioConDescuento','    Definir precio Como Real','    Escribir "Ingrese el precio:"','    Leer precio','    Si precio > 10000 Entonces','        precio <- precio * 0.9','    FinSi','    Escribir "Precio final: $", precio','FinAlgoritmo'],
+ an:['precio','si precio > 10000: precio ← precio * 0.9','precio final','15000 → 13500 · 10000 → 10000'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer precio',[2,3],{next:'c',do:(v,io)=>ask(io,'Ingrese el precio:','precio')}),
+ N('c','dec',0,2,'precio > 10000',[4],{yes:'d',no:'e',test:v=>v.precio>10000,ex:v=>`${fmt(v.precio)} > 10000 es`}),
+ N('d','proc',1,3,'precio ← precio * 0.9',[5],{next:'e',do:v=>{v.precio=v.precio*0.9},w:'Multiplicar por 0.9 es lo mismo que quedarse con el 90%, o sea, restar el 10%.'}),
+ N('e','io',0,4,'Escribir precio',[6,7],{next:'f',do:(v,io)=>say(io,'Precio final: $'+fmt(v.precio))}),N('f','end',0,5,'Fin',[8])]},
+calc:{vars:[['a','Real'],['b','Real'],['suma','Real'],['resta','Real'],['mult','Real']],inputs:[['a','a',6],['b','b',4]],presets:[[6,4],[-2,7]],
+ code:['Algoritmo Calculadora','    Definir a, b, suma, resta, mult Como Real','    Escribir "Ingrese dos numeros:"','    Leer a, b','    suma <- a + b','    resta <- a - b','    mult <- a * b','    Escribir "Suma: ", suma','    Escribir "Resta: ", resta','    Escribir "Multiplicacion: ", mult','FinAlgoritmo'],
+ an:['a, b','suma, resta, mult','los tres resultados','6 y 4 → 10, 2, 24'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer a, b',[2,3],{next:'c',do:(v,io)=>{ask(io,'Ingrese dos numeros:','a');ask(io,null,'b')}}),
+ N('c','proc',0,2,'suma ← a + b',[4],{next:'d',do:v=>{v.suma=v.a+v.b}}),N('d','proc',0,3,'resta ← a - b',[5],{next:'e',do:v=>{v.resta=v.a-v.b}}),N('e','proc',0,4,'mult ← a * b',[6],{next:'f',do:v=>{v.mult=v.a*v.b}}),
+ N('f','io',0,5,'Escribir suma, resta, mult',[7,8,9],{next:'g',do:(v,io)=>{say(io,'Suma: '+fmt(v.suma));say(io,'Resta: '+fmt(v.resta));say(io,'Multiplicacion: '+fmt(v.mult))}}),N('g','end',0,6,'Fin',[10])]},
+comp10:{vars:[['numero','Real']],inputs:[['numero','Número',5]],presets:[[5],[10],[15]],
+ code:['Algoritmo CompararConDiez','    Definir numero Como Real','    Escribir "Ingrese un numero:"','    Leer numero','    Si numero > 10 Entonces','        Escribir "Es mayor que 10"','    Sino','        Escribir "No es mayor que 10"','    FinSi','FinAlgoritmo'],
+ nodes:[N('a','start',0,0,'Inicio',[0,1],{next:'b'}),N('b','io',0,1,'Leer numero',[2,3],{next:'c',do:(v,io)=>ask(io,'Ingrese un numero:','numero')}),
+ N('c','dec',0,2,'numero > 10',[4],{yes:'d',no:'e',test:v=>v.numero>10,ex:v=>`${fmt(v.numero)} > 10 es`}),
+ N('d','io',1,3,'Escribir "Mayor que 10"',[5],{next:'f',do:(v,io)=>say(io,'Es mayor que 10')}),N('e','io',-1,3,'Escribir "No es mayor"',[6,7],{next:'f',do:(v,io)=>say(io,'No es mayor que 10')}),N('f','end',0,4,'Fin',[8,9])]}
+};
+
+/* ---------- flowchart + ejecución ---------- */
+const S={start:[120,40],end:[120,40],io:[200,46],proc:[200,46],dec:[204,78]};
+const WHY={start:'Comienza el algoritmo y se declaran las variables con su tipo.',io:'Entrada: se pide el dato al usuario y se guarda en la variable.',proc:'Proceso: se calcula la expresión de la derecha y el resultado se guarda en la variable de la izquierda.',out:'Salida: se muestra el resultado en pantalla.',end:'Fin del algoritmo. Revisá la consola: ¿es el resultado que esperabas?'};
+let UID=0;
+function mountTracer(host,key,opt={}){
+ const p=P[key],id='t'+(++UID),by={};p.nodes.forEach(n=>by[n.id]=n);
+ const xs=p.nodes.map(n=>n.x),mn=Math.min(...xs),mx=Math.max(...xs),my=Math.max(...p.nodes.map(n=>n.y));
+ const CW=226,RH=100,PAD=14,cx=n=>PAD+(n.x-mn)*CW+CW/2,cy=n=>PAD+34+n.y*RH,top=n=>cy(n)-S[n.t][1]/2,bot=n=>cy(n)+S[n.t][1]/2;
+ const W=PAD*2+(mx-mn+1)*CW,H=cy({y:my})+40;
+ const edges=[];p.nodes.forEach(n=>{if(n.t==='dec'){edges.push([n,by[n.yes],'V']);edges.push([n,by[n.no],'F'])}else if(n.next)edges.push([n,by[n.next],''])});
+ const shp=n=>{const X=cx(n),Y=cy(n),[w,h]=S[n.t];
+  if(n.t==='start'||n.t==='end')return`<rect class="sh" x="${X-w/2}" y="${Y-h/2}" width="${w}" height="${h}" rx="20"/>`;
+  if(n.t==='proc')return`<rect class="sh" x="${X-w/2}" y="${Y-h/2}" width="${w}" height="${h}" rx="3"/>`;
+  if(n.t==='io')return`<polygon class="sh" points="${X-w/2+14},${Y-h/2} ${X+w/2},${Y-h/2} ${X+w/2-14},${Y+h/2} ${X-w/2},${Y+h/2}"/>`;
+  return`<polygon class="sh" points="${X},${Y-h/2} ${X+w/2},${Y} ${X},${Y+h/2} ${X-w/2},${Y}"/>`};
+ const eg=([a,b,l])=>{let d,lx,ly;
+  if(a.t==='dec'&&b.x!==a.x){const s=Math.sign(b.x-a.x),sx=cx(a)+s*S.dec[0]/2;d=`M${sx} ${cy(a)} H${cx(b)} V${top(b)-3}`;lx=sx+s*12;ly=cy(a)-8}
+  else if(b.x===a.x){d=`M${cx(a)} ${bot(a)} V${top(b)-3}`;lx=cx(a)+14;ly=bot(a)+18}
+  else{const ym=top(b)-24;d=`M${cx(a)} ${bot(a)} V${ym} H${cx(b)} V${top(b)-3}`}
+  return`<path class="e" data-e="${a.id}>${b.id}" d="${d}" marker-end="url(#${id}m)"/>`+(l?`<text class="lb ${l}" x="${lx}" y="${ly}" text-anchor="middle">${l}</text>`:'')};
+ const svg=`<svg class="fc" viewBox="0 0 ${W} ${H}" style="max-width:${W}px;min-width:${Math.round(W*.62)}px" role="img" aria-label="Diagrama de flujo"><defs>
+  <marker id="${id}m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0 0L10 5L0 10z"/></marker>
+  <marker id="${id}d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mkd" d="M0 0L10 5L0 10z"/></marker></defs>
+  ${edges.map(eg).join('')}${p.nodes.map(n=>`<g class="n" data-n="${n.id}">${shp(n)}<text x="${cx(n)}" y="${cy(n)+4.5}" text-anchor="middle">${esc(n.s)}</text></g>`).join('')}</svg>`;
+ const inputs=p.inputs.map(([n,l,d])=>`<label>${esc(l)} <span class="mono">(${n})</span><input type="number" step="any" data-v="${n}" value="${d}"></label>`).join('');
+ const chips=(opt.presets||p.presets||[]).map((ps,i)=>`<button data-p="${i}">${ps.map(fmt).join(' · ')}</button>`).join('');
+ host.innerHTML=`<div class="tracer">
+  <div class="chart scroll">${svg}</div>
+  <div class="side">
+   <div class="ins">${inputs}</div>
+   <div class="row chips"><span class="lbl" style="margin:0">Probar con:</span>${chips}</div>
+   ${opt.predict?`<div class="pred"><div class="lbl">Antes de ejecutar: ¿la condición <code>${esc(p.nodes.find(n=>n.t==='dec').s)}</code> dará…?</div><div class="row"><button data-pr="1">Verdadero</button><button data-pr="0">Falso</button><span class="res" aria-live="polite"></span></div></div>`:''}
+   <div class="row"><button class="pri" data-a="step">Paso ▸</button><button data-a="run">Ejecutar todo</button><button data-a="reset">Reiniciar</button></div>
+   <div class="why" aria-live="polite">Tocá <b>Paso</b> para empezar.</div>
+   <div><div class="lbl">Código PSeInt</div><pre class="code"><button class="cp">Copiar</button>${p.code.map((l,i)=>`<span class="ln" data-l="${i}"><i>${i+1}</i>${hl(l)}</span>`).join('')}</pre></div>
+   <div class="cols" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+    <div><div class="lbl">Variables (memoria)</div><table class="vt"><thead><tr><th>Nombre</th><th>Tipo</th><th style="text-align:right">Valor</th></tr></thead><tbody></tbody></table></div>
+    <div><div class="lbl">Pantalla (consola)</div><div class="con" aria-live="polite"></div></div>
+   </div>
+  </div></div>`;
+ const $=s=>host.querySelector(s),$$=s=>host.querySelectorAll(s);
+ const types=Object.fromEntries(p.vars);let st,timer=null,pred=null;
+ const reset=()=>{stop();st={cur:p.nodes[0].id,v:{},con:[],vis:new Set(),ed:new Set(),on:null,ch:new Set(),done:false,first:null};
+  $('.why').className='why';$('.why').innerHTML='Tocá <b>Paso</b> para empezar.';if(opt.predict)$('.res').textContent='';render()};
+ const io={ask(pr,n){const inp=$(`[data-v="${n}"]`),raw=inp.value.trim(),val=Number(raw);
+   if(raw===''||!isFinite(val))throw Error(`Falta ingresar un valor válido para ${n}.`);
+   if(types[n]==='Entero'&&!Number.isInteger(val))throw Error(`${n} es de tipo Entero: no puede tener decimales.`);
+   if(pr)st.con.push(['out',pr]);st.con.push(['in',raw]);st.v[n]=val;st.ch.add(n)},
+  say(t){st.con.push(['out',t])}};
+ function step(){if(st.done)return false;const n=by[st.cur],snapV={...st.v},snapC=st.con.length;st.ch=new Set();
+  const before={...st.v};
+  try{n.do&&n.do(st.v,io)}catch(e){st.v=snapV;st.con.length=snapC;st.on=n.id;render();$('.why').className='why err';$('.why').textContent=e.message+' Corregí el dato y tocá Paso otra vez.';stop();return false}
+  Object.keys(st.v).forEach(k=>{if(st.v[k]!==before[k])st.ch.add(k)});
+  st.on=n.id;st.vis.add(n.id);let nx=n.next,msg;
+  if(n.t==='dec'){const r=!!n.test(st.v);nx=r?n.yes:n.no;if(st.first===null)st.first=r;
+   msg=`Decisión: ${esc(n.ex(st.v))} <b style="color:var(--${r?'blue':'red'})">${r?'Verdadero':'Falso'}</b>, así que sigue por la flecha <b>${r?'V':'F'}</b>.`;st.con.push(['sys',`¿${n.s}? → ${r?'Verdadero':'Falso'}`])}
+  else{const isOut=n.t==='io'&&/^Escribir/.test(n.s);msg=n.w||WHY[isOut?'out':n.t]}
+  $('.why').className='why';$('.why').innerHTML=`<b>Paso ${st.vis.size}.</b> ${msg}`;
+  if(nx){st.ed.add(n.id+'>'+nx);st.cur=nx}else{st.done=true;finish()}
+  render();return!st.done}
+ function finish(){if(opt.predict&&pred!==null&&st.first!==null){const ok=pred===st.first;
+  $('.res').innerHTML=ok?'<span style="color:var(--blue)">¡Bien! Predijiste el camino correcto.</span>':`<span style="color:var(--red)">No: dio ${st.first?'Verdadero':'Falso'}. Revisá la condición.</span>`}}
+ function render(){
+  $$('.n').forEach(g=>{const k=g.dataset.n;g.classList.toggle('on',k===st.on);g.classList.toggle('done',st.vis.has(k)&&k!==st.on)});
+  $$('.e').forEach(e=>{const on=st.ed.has(e.dataset.e);e.classList.toggle('done',on);e.setAttribute('marker-end',`url(#${id}${on?'d':'m'})`)});
+  const L=st.on?by[st.on].L:[];$$('.ln[data-l]').forEach(l=>l.classList.toggle('on',L.includes(+l.dataset.l)));
+  $('.vt tbody').innerHTML=p.vars.map(([n,t])=>`<tr class="${st.ch.has(n)?'ch':''}"><td class="mono">${n}</td><td>${t}</td><td>${n in st.v?fmt(st.v[n]):'—'}</td></tr>`).join('');
+  const c=$('.con');c.innerHTML=st.con.length?st.con.map(([k,t])=>`<div class="${k}">${esc(t)}</div>`).join(''):'<div class="ph">(todavía no se mostró nada)</div>';c.scrollTop=c.scrollHeight;
+  $('[data-a=step]').disabled=st.done;$('[data-a=run]').disabled=st.done}
+ function stop(){if(timer){clearInterval(timer);timer=null}}
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function run(){stop();if(reduce){while(step());return}if(!step())return;timer=setInterval(()=>{if(!step())stop()},700)}
+ host.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.a==='step'){stop();step()}else if(b.dataset.a==='run')run();else if(b.dataset.a==='reset')reset();
+  else if(b.dataset.p!==undefined){const ps=(opt.presets||p.presets)[+b.dataset.p];p.inputs.forEach(([n],i)=>$(`[data-v="${n}"]`).value=ps[i]);reset();if(!opt.predict)run()}
+  else if(b.dataset.pr!==undefined){pred=b.dataset.pr==='1';$$('[data-pr]').forEach(x=>x.classList.toggle('sel',x===b));reset();run()}
+  else if(b.classList.contains('cp')){navigator.clipboard?.writeText(p.code.join('\n')).then(()=>{b.textContent='¡Copiado!';setTimeout(()=>b.textContent='Copiar',1400)}).catch(()=>{b.textContent='Seleccioná y copiá'})}});
+ host.addEventListener('input',e=>{if(e.target.dataset.v){reset();if(opt.predict){pred=null;$$('[data-pr]').forEach(x=>x.classList.remove('sel'))}}});
+ reset()}
+
+const anHTML=k=>{const a=P[k].an;return`<div class="an"><div><small>Entradas</small><code>${esc(a[0])}</code></div><div><small>Proceso</small><code>${esc(a[1])}</code></div><div><small>Salida</small><code>${esc(a[2])}</code></div><div><small>Prueba</small><code>${esc(a[3])}</code></div></div>`};
+
+/* ---------- ejemplos ---------- */
+const EX=[
+ {k:'suma',t:'Suma de dos números',e:'Secuencial',en:'Solicitar dos números, sumarlos y mostrar el resultado.',x:'Es una estructura secuencial: las instrucciones se ejecutan una después de otra, sin decisiones. Fijate que <code>suma</code> vale “—” hasta que llega el paso de proceso.'},
+ {k:'prom2',t:'Promedio de dos notas',e:'Secuencial',en:'Solicitar dos notas, calcular el promedio y mostrarlo. Prueba: nota1 = 8 y nota2 = 6, resultado esperado 7.',x:'Lo importante es el orden de las operaciones: <code>(nota1 + nota2) / 2</code>. Sin paréntesis, <code>nota1 + nota2 / 2</code> daría 8 + 3 = 11.'},
+ {k:'parimpar',t:'Par o impar',e:'Condicional doble',en:'Ingresar un número entero e informar si es par o impar, usando MOD para calcular el resto de la división por 2.',x:'<code>MOD</code> devuelve el resto: si al dividir por 2 sobra 0, el número es par; si sobra 1, es impar. Probá con 0: también es par.'},
+ {k:'aprob',t:'Aprobado o desaprobado',e:'Condicional doble',en:'Ingresar una nota. Si es mayor o igual a 6, mostrar Aprobado; en caso contrario, Desaprobado.',x:'Probá el valor límite 6: como la condición es <code>&gt;=</code>, da Verdadero. Si fuera <code>&gt;</code>, un 6 quedaría desaprobado. Siempre conviene probar el límite.'}];
+const tabs=document.getElementById('extabs'),panel=document.getElementById('expanel'),mounted={};
+tabs.innerHTML=EX.map((x,i)=>`<button role="tab" id="tab-${x.k}" aria-selected="${i===0}" data-i="${i}">Ejemplo ${i+1} · ${esc(x.t)}</button>`).join('');
+panel.innerHTML=EX.map((x,i)=>`<div role="tabpanel" id="ex-${x.k}" aria-labelledby="tab-${x.k}" ${i?'hidden':''}><h3>Ejemplo ${i+1} · ${esc(x.t)} <span class="tag">${x.e}</span></h3><p><b>Enunciado:</b> ${esc(x.en)}</p>${anHTML(x.k)}<p>${x.x}</p><div class="tr"></div></div>`).join('');
+const showEx=i=>{tabs.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-selected',j===i));panel.querySelectorAll('[role=tabpanel]').forEach((p,j)=>p.hidden=j!==i);
+ const k=EX[i].k;if(!mounted['ex'+k]){mountTracer(panel.querySelector(`#ex-${k} .tr`),k);mounted['ex'+k]=1}};
+tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(b)showEx(+b.dataset.i)});
+tabs.addEventListener('keydown',e=>{if(!['ArrowRight','ArrowLeft'].includes(e.key))return;const bs=[...tabs.querySelectorAll('button')],i=bs.indexOf(document.activeElement),n=(i+(e.key==='ArrowRight'?1:bs.length-1))%bs.length;bs[n].focus();showEx(n)});
+showEx(0);
+
+/* ---------- papel ---------- */
+const PR=[
+ {k:'sumaresta',t:'Suma y resta',en:'Ingresar dos números y calcular la suma y la resta. Identificar entradas, procesos y salidas.',h:'Necesitás 2 variables de entrada y 2 de resultado. Son dos procesos seguidos: estructura secuencial.'},
+ {k:'area',t:'Área de un rectángulo',en:'Solicitar base y altura, calcular el área (base × altura) y mostrar el resultado.',h:'En PSeInt la multiplicación se escribe con <code>*</code>, no con × ni con x.'},
+ {k:'prom3',t:'Promedio de tres notas',en:'Ingresar tres notas y calcular el promedio. Escribir el algoritmo y probarlo con 7, 8 y 6.',h:'Igual que el promedio de dos, pero dividiendo por 3. Con 7, 8 y 6 tiene que dar 7.'},
+ {k:'signo',t:'Mayor, menor o igual a cero',en:'Ingresar un número e indicar si es positivo, negativo o cero. Describir las condiciones necesarias.',h:'Hay tres resultados posibles, pero cada decisión tiene solo dos salidas: necesitás una decisión adentro de otra (anidada).'},
+ {k:'mayor',t:'Mayor de dos números',en:'Ingresar dos números e informar cuál es mayor. Si son iguales, mostrar un mensaje que lo indique.',h:'Misma idea que el anterior: primero <code>a &gt; b</code>; si es falso, preguntá <code>a &lt; b</code>; si también es falso, son iguales.'},
+ {k:'parimpar',t:'Par o impar',en:'Ingresar un entero y determinar si es par o impar. Explicar el uso de MOD.',h:'<code>n MOD 2</code> solo puede dar 0 (par) o 1 (impar). Explicalo con un ejemplo: 13 MOD 2 = 1 porque 13 = 2 × 6 + 1.'},
+ {k:'edad',t:'Edad',en:"Ingresar una edad. Si es 18 o más, informar 'Mayor de edad'; de lo contrario, 'Menor de edad'.",h:'“18 o más” se escribe <code>edad &gt;= 18</code>. Probá con 17, 18 y 19.'},
+ {k:'desc',t:'Descuento',en:'Ingresar el precio de un producto. Si supera $10.000, aplicar un descuento del 10%. Mostrar el precio final.',h:'Es un condicional <b>simple</b> (sin Sino): si no supera, no se hace nada y se muestra el precio igual. “Supera” es <code>&gt;</code>, así que 10.000 no tiene descuento.'}];
+document.getElementById('paper').innerHTML=PR.map((x,i)=>`<article class="card" id="pr-${x.k}"><h3><span class="num">${i+1}.</span>${esc(x.t)}</h3><p>${esc(x.en)}</p>
+ <details><summary>Pista</summary><p>${x.h}</p></details>
+ <div class="row" style="margin-top:10px"><button data-sol="${i}" aria-expanded="false">Ver solución con diagrama</button></div>
+ <div class="sol" hidden>${anHTML(x.k)}<div class="tr"></div></div></article>`).join('');
+const openSol=(card,k,force)=>{const s=card.querySelector('.sol'),b=card.querySelector('[data-sol]'),open=force||s.hidden;s.hidden=!open;b.setAttribute('aria-expanded',open);b.textContent=open?'Ocultar solución':'Ver solución con diagrama';
+ if(open&&!mounted['pr'+card.id]){mountTracer(s.querySelector('.tr'),k);mounted['pr'+card.id]=1}};
+document.getElementById('paper').addEventListener('click',e=>{const b=e.target.closest('[data-sol]');if(b)openSol(b.closest('.card'),PR[+b.dataset.sol].k)});
+
+/* ---------- PSeInt ---------- */
+const PS=[
+ {t:'Calculadora básica',en:'Ingresar dos números y mostrar suma, resta y multiplicación.',go:['calc']},
+ {t:'Promedio',en:'Ingresar tres notas y mostrar el promedio.',go:['pr','prom3']},
+ {t:'Par o impar',en:'Ingresar un entero y determinar si es par o impar usando MOD.',go:['ex',2]},
+ {t:'Aprobación',en:'Mostrar Aprobado si la nota es mayor o igual a 6; Desaprobado si es menor a 6.',go:['ex',3]},
+ {t:'Mayor de dos números',en:'Informar cuál es mayor o si son iguales.',go:['pr','mayor']},
+ {t:'Positivo, negativo o cero',en:'Ingresar un número y clasificarlo.',go:['pr','signo']},
+ {t:'Precio con descuento',en:'Si el precio supera un valor establecido, aplicar descuento y mostrar el precio final.',go:['pr','desc']}];
+document.getElementById('pslist').innerHTML=PS.map((x,i)=>`<div class="card"><h3><span class="num">${i+1}.</span>${esc(x.t)}</h3><p>${esc(x.en)}</p><button data-go="${i}">${x.go[0]==='calc'?'Ver solución':'Ir a la solución'}</button></div>`).join('');
+document.getElementById('pslist').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;const g=PS[+b.dataset.go].go;
+ if(g[0]==='calc'){const s=document.getElementById('calcsol');s.hidden=!s.hidden;b.textContent=s.hidden?'Ver solución':'Ocultar solución';
+  if(!mounted.calc){s.innerHTML=`<h3 style="margin-top:22px">Solución · Calculadora básica</h3>${anHTML('calc')}<div class="tr"></div>`;mountTracer(s.querySelector('.tr'),'calc');mounted.calc=1}if(!s.hidden)s.scrollIntoView({block:'start'})}
+ else if(g[0]==='ex'){showEx(g[1]);document.getElementById('ejemplos').scrollIntoView({block:'start'})}
+ else{const c=document.getElementById('pr-'+g[1]);openSol(c,g[1],true);c.scrollIntoView({block:'start'})}});
+
+/* ---------- desafíos ---------- */
+mountTracer(document.getElementById('ch1'),'comp10',{predict:true,presets:[[5],[10],[15]]});
+mountTracer(document.getElementById('ch2'),'parimpar',{predict:true,presets:[[8],[13],[20]]});
+
+/* ---------- operadores ---------- */
+const pa=document.getElementById('pa'),pb=document.getElementById('pb'),ops=document.getElementById('ops');
+const L=x=>`<b class="${x?'V':'F'}">${x?'Verdadero':'Falso'}</b>`;
+const drawOps=()=>{const a=Number(pa.value),b=Number(pb.value);if(pa.value===''||pb.value===''){ops.innerHTML='<div>Ingresá a y b</div>';return}
+ const z=b===0,mod=Number.isInteger(a)&&Number.isInteger(b)&&!z?fmt(a%b):(z?'÷ 0 no se puede':'solo enteros');
+ const r=[['a + b',`<b>${fmt(a+b)}</b>`],['a - b',`<b>${fmt(a-b)}</b>`],['a * b',`<b>${fmt(a*b)}</b>`],['a / b',`<b>${z?'÷ 0 no se puede':fmt(a/b)}</b>`],['a MOD b',`<b>${mod}</b>`],
+  ['a > b',L(a>b)],['a < b',L(a<b)],['a = b',L(a===b)],['a <> b',L(a!==b)],['a >= b',L(a>=b)],['a <= b',L(a<=b)],
+  ['a>0 AND b>0',L(a>0&&b>0)],['a>0 OR b>0',L(a>0||b>0)],['NOT (a > b)',L(!(a>b))]];
+ ops.innerHTML=r.map(([e,v])=>`<div><span>${esc(e)}</span>${v}</div>`).join('')};
+pa.addEventListener('input',drawOps);pb.addEventListener('input',drawOps);drawOps();
+
+/* ---------- preguntas ---------- */
+const Q=[
+ ['¿Qué es un algoritmo y qué características debe tener?','Es una secuencia ordenada y finita de pasos claros que resuelve un problema. Debe tener <b>orden</b> (pasos en secuencia precisa), <b>claridad</b> (cada paso se entiende de una sola forma) y <b>finitud</b> (termina).'],
+ ['¿Qué diferencia existe entre un algoritmo y un programa?','El algoritmo es la idea de la solución, independiente del lenguaje (puede estar en palabras, pseudocódigo o diagrama). El programa es ese algoritmo escrito en un lenguaje que la computadora puede ejecutar, como PSeInt.'],
+ ['¿Qué es una variable? ¿Para qué sirve?','Es un espacio de memoria con un nombre que guarda un dato que puede cambiar durante la ejecución. Sirve para guardar los datos de entrada, resultados intermedios y resultados finales. Ej: <code>suma</code>.'],
+ ['¿Qué diferencia hay entre entero y real? ¿Y entre numérico y texto?','Un <b>entero</b> no tiene decimales (5, −3); un <b>real</b> sí (7.5). Con los <b>numéricos</b> se hacen cuentas; el <b>texto</b> es una cadena de caracteres entre comillas (“Hola”) y no se usa para operar aritméticamente.'],
+ ['¿Qué significa entrada, procesamiento y salida?','<b>Entrada:</b> los datos que recibe el algoritmo (Leer). <b>Procesamiento:</b> los cálculos y decisiones con esos datos. <b>Salida:</b> los resultados que se muestran (Escribir).'],
+ ['¿Qué operadores aritméticos conocés?','Suma <code>+</code>, resta <code>-</code>, multiplicación <code>*</code>, división <code>/</code> y módulo o resto <code>MOD</code>.'],
+ ['¿Qué hace el operador MOD?','Devuelve el <b>resto</b> de una división entera. <code>7 MOD 2 = 1</code>, <code>10 MOD 5 = 0</code>. Sirve, por ejemplo, para saber si un número es par: <code>n MOD 2 = 0</code>.'],
+ ['¿Qué diferencia hay entre un operador aritmético y uno relacional?','El <b>aritmético</b> calcula y devuelve un número (3 + 4 → 7). El <b>relacional</b> compara dos valores y devuelve Verdadero o Falso (3 &gt; 4 → Falso). Los relacionales se usan en las condiciones.'],
+ ['¿Qué es una estructura secuencial?','Aquella en la que las instrucciones se ejecutan una después de otra, en el orden en que están escritas, cada una una sola vez. Ej: suma de dos números.'],
+ ['¿Qué es una estructura condicional?','Es la que permite <b>tomar decisiones</b>: según si una condición es verdadera o falsa, el algoritmo sigue un camino u otro.'],
+ ['¿Para qué se utiliza Si / Entonces / Sino?','Para escribir una condicional. Si la condición es verdadera se ejecuta lo que está después de <code>Entonces</code>; si es falsa, lo que está después de <code>Sino</code>. Sin <code>Sino</code> es un condicional simple.'],
+ ['¿Qué representa el símbolo de decisión en un diagrama de flujo?','Es el <b>rombo</b>. Contiene una condición y tiene dos salidas: una para Verdadero y otra para Falso.'],
+ ['¿Qué representa el símbolo de proceso? ¿Y el de entrada/salida?','El <b>rectángulo</b> es proceso: cálculos y asignaciones. El <b>paralelogramo</b> es entrada/salida: leer datos o mostrar resultados.'],
+ ['¿Qué función cumplen Leer y Escribir en PSeInt?','<code>Leer</code> pide un dato al usuario y lo guarda en una variable. <code>Escribir</code> muestra en pantalla un mensaje o el valor de una variable.'],
+ ['¿Cómo comprobarías que un algoritmo funciona correctamente?','Con una <b>prueba de escritorio</b>: elijo datos cuyo resultado ya conozco, incluyo casos límite (nota 6, número 0, valores iguales), sigo el algoritmo paso a paso anotando las variables y comparo el resultado obtenido con el esperado. Después lo ejecuto en PSeInt con esos mismos datos.']];
+let qs=store.get('coloquio-q',{}),filt='all';
+const cards=document.getElementById('cards');
+const drawQ=()=>{cards.innerHTML=Q.map(([q,a],i)=>{const s=qs[i];if(filt==='rep'&&s==='ok')return'';return`<article class="q ${s||''}" id="q${i}"><h3>${i+1}. ${esc(q)}</h3><div class="a" hidden>${a}</div>
+  <div class="row"><button data-show="${i}">Mostrar respuesta</button><button data-ok="${i}" aria-pressed="${s==='ok'}">La sé</button><button data-rep="${i}" aria-pressed="${s==='rep'}">Repasar</button></div></article>`}).join('')||'<p>¡No quedan preguntas para repasar!</p>';
+ const n=Object.values(qs).filter(v=>v==='ok').length;document.getElementById('mbar').style.width=(n/Q.length*100)+'%';document.getElementById('mtxt').textContent=`${n} de ${Q.length} sabidas`};
+cards.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+ if(d.show!==undefined){const a=b.closest('.q').querySelector('.a');a.hidden=!a.hidden;b.textContent=a.hidden?'Mostrar respuesta':'Ocultar respuesta';return}
+ const i=d.ok??d.rep,v=d.ok!==undefined?'ok':'rep';qs[i]=qs[i]===v?undefined:v;store.set('coloquio-q',qs);drawQ()});
+const fA=document.getElementById('fAll'),fR=document.getElementById('fRep');
+fA.onclick=()=>{filt='all';fA.setAttribute('aria-pressed','true');fR.setAttribute('aria-pressed','false');drawQ()};
+fR.onclick=()=>{filt='rep';fR.setAttribute('aria-pressed','true');fA.setAttribute('aria-pressed','false');drawQ()};
+document.getElementById('rnd').onclick=()=>{const vis=[...cards.querySelectorAll('.q')];if(!vis.length)return;vis.forEach(c=>c.classList.remove('pick'));const c=vis[Math.floor(Math.random()*vis.length)];
+ c.querySelector('.a').hidden=true;c.querySelector('[data-show]').textContent='Mostrar respuesta';c.classList.add('pick');c.scrollIntoView({block:'center'})};
+drawQ();
+
+/* ---------- checklist ---------- */
+const R=['Estudiar los conceptos y poder explicarlos con palabras propias.','Practicar ejercicios en papel antes de programarlos.','Identificar las variables y los datos que necesita cada problema.','Pensar la lógica de resolución antes de escribir el código.','Practicar en PSeInt y probar los algoritmos con distintos valores.','Revisar los diagramas de flujo trabajados en clase.'];
+let ck=store.get('coloquio-ck',[]);const chk=document.getElementById('chk');
+chk.innerHTML=R.map((r,i)=>`<label><input type="checkbox" data-c="${i}" ${ck.includes(i)?'checked':''}><span>${esc(r)}</span></label>`).join('');
+chk.addEventListener('change',e=>{const i=+e.target.dataset.c;ck=e.target.checked?[...new Set([...ck,i])]:ck.filter(x=>x!==i);store.set('coloquio-ck',ck)});
+}
+</script>
+</body>
+</html>
